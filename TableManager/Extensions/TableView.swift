@@ -18,4 +18,32 @@ extension UITableView {
     func deque<T: UITableViewCell>(_ indexPath: IndexPath) -> T {
         return self.dequeueReusableCell(withIdentifier: T.identifier(), for: indexPath) as! T
     }
+    
+}
+
+extension UITableView {
+    
+    func reload(identifier: String, data: DataSource) {
+        let sectionElement = data.first(where: { (section) -> Bool in
+            section.contains(where: { (row) -> Bool in
+                row.identifier == identifier
+            })
+        })
+        
+        let sectionIndex = data.index(where: { (section) -> Bool in
+            section.contains(where: { (row) -> Bool in
+                row.identifier == identifier
+            })
+        })
+        
+        let rowIndex = sectionElement?.index(where: { (row) -> Bool in
+            row.identifier == identifier
+        })
+        
+        guard let section = sectionIndex, let row = rowIndex else { return }
+        
+        self.reloadRows(at: [IndexPath(row: row, section: section)], with: .none)
+
+    }
+    
 }

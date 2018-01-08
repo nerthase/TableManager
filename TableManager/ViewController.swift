@@ -11,16 +11,14 @@ import UIKit
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    var dataSource: [[CellManager]] = []
+    var dataSource: DataSource = []
     
     var user = User() {
         didSet {
-            self.populateTable { cells, indexPathsToReload in
-                self.dataSource = cells
-                self.tableView.reloadRows(at: indexPathsToReload, with: .none)
-            }
+            self.tableView.reload(identifier: "label", data: self.dataSource)
         }
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,64 +26,81 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
-        self.populateTable(callback: {cells, _ in
-            self.dataSource = cells
-        })
+        self.populateTable()
     }
 
     
+    //MARK: Table Population
+    
+    func populateTable() {
+        let name: Blocks.cellBuilder = { (tableView, indexPath) in
+            tableView.register(CellField.self)
+            
+            let cell: CellField = tableView.deque(indexPath)
+            cell.build(placeholder: "Name", text: self.user.name, keyboardType: .default, isSecureTextEntry: false, block: {
+                self.user.name = $0
+            })
+            return cell
+        }
+        
+        let email: Blocks.cellBuilder = { (tableView, indexPath) in
+            tableView.register(CellField.self)
+            
+            let cell: CellField = tableView.deque(indexPath)
+            cell.build(placeholder: "Email", text: self.user.email, keyboardType: .emailAddress, isSecureTextEntry: false, block: {
+                self.user.email = $0
+            })
+            return cell
+        }
+        
+        let password: Blocks.cellBuilder = { (tableView, indexPath) in
+            tableView.register(CellField.self)
+            
+            let cell: CellField = tableView.deque(indexPath)
+            cell.build(placeholder: "Password", text: self.user.password, keyboardType: .default, isSecureTextEntry: true, block: {
+                self.user.password = $0
+            })
+            return cell
+        }
+        
+        let label: Blocks.cellBuilder = { (tableView, indexPath) in
+            tableView.register(CellLabel.self)
+            
+            let cell: CellLabel = tableView.deque(indexPath)
+            cell.build(text: self.user.description)
+            return cell
+        }
+        
+        let update: Blocks.cellBuilder = { (tableView, indexPath) in
+            tableView.register(CellButton.self)
+            
+            let cell: CellButton = tableView.deque(indexPath)
+            cell.build(text: "Reset values", block: {
+                self.user = User()
+                self.tableView.reloadData()
+            })
+            return cell
+        }
+        
+        self.dataSource = [[(nil, name), (nil, email), (nil, password)], [("label", label)], [(nil, update)]]
+    }
+    
+    
+    //MARK: UITableViewDataSource, UITableViewDelegate
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dataSource.count
+        return self.dataSource.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource[section].count
+        return self.dataSource[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return dataSource[indexPath.section][indexPath.row].getCell(tableView: tableView, indexPath: indexPath)
+        return self.dataSource[indexPath.section][indexPath.row].block(tableView, indexPath)
     }
     
-    
-    func populateTable(callback: ([[CellManager]], [IndexPath]) -> ()) {
-        var tmpCellManager: [[CellManager]] = []
-        var tmpIndexPaths: [IndexPath] = []
-        
-        let cellName = CellFieldManager(
-            placehoder: "Name",
-            text: self.user.name,
-            block: { name in
-                self.user.name = name
-            })
-        
-        let cellEmail = CellFieldManager(
-            placehoder: "Email",
-            text: self.user.email,
-            keyboardType: .emailAddress,
-            block: { email in
-                self.user.email = email
-            })
-        
-        let cellPassword = CellFieldManager(
-            placehoder: "Password",
-            text: self.user.password,
-            isSecureTextEntry: true,
-            block: { password in
-                self.user.password = password
-            })
-        
-        tmpCellManager.append([cellName, cellEmail, cellPassword])
-
-        let cellLabel = CellLabelManager(text: self.user.description)
-        tmpCellManager.append([cellLabel])
-        
-        tmpIndexPaths.append(cellLabel.indexPath(inArray: tmpCellManager))
-        
-        callback(tmpCellManager, tmpIndexPaths)
-    }
 }
 
-enum Blocks {
-    typealias stringBlock = (String) -> ()
-}
+
 

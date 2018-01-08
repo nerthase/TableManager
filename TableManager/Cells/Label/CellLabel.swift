@@ -17,20 +17,3 @@ class CellLabel: UITableViewCell {
         self.label.text = text
     }
 }
-
-class CellLabelManager: CellManager {
-    
-    var text: String?
-    
-    init(text: String?) {
-        self.text = text
-    }
-    
-    func getCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
-        tableView.register(CellLabel.self)
-        
-        let cell: CellLabel = tableView.deque(indexPath)
-        cell.build(text: self.text)
-        return cell
-    }
-}
