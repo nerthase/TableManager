@@ -19,6 +19,12 @@ extension UITableView {
         return self.dequeueReusableCell(withIdentifier: T.identifier(), for: indexPath) as! T
     }
     
+    
+    func prepare<T: UITableViewCell>(_ indexPath: IndexPath) -> T {
+        self.register(T.self)
+        return self.deque(indexPath)
+    }
+    
 }
 
 extension UITableView {

@@ -10,14 +10,26 @@ import Foundation
 import UIKit
 
 
+struct CellBuilder {
+    var block: Blocks.cellBuilder
+    var identifier: String?
+    
+    init(identifier: String, block: @escaping Blocks.cellBuilder) {
+        self.block = block
+        self.identifier = identifier
+    }
+    
+    init(block: @escaping Blocks.cellBuilder) {
+        self.block = block
+    }
+}
+
+
 enum Blocks {
     typealias empty = () -> ()
     typealias string = (String) -> ()
     typealias cellBuilder = (UITableView, IndexPath) -> (UITableViewCell)
 }
 
-enum Tuples {
-    typealias cellBuilder = (identifier: String?, block: Blocks.cellBuilder)
-}
 
-typealias DataSource = [[Tuples.cellBuilder]]
+typealias DataSource = [[CellBuilder]]

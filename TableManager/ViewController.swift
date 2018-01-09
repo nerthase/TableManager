@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
@@ -28,53 +29,49 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         self.populateTable()
     }
+    
+}
 
+
+
+
+extension ViewController {
     
     //MARK: Table Population
     
     func populateTable() {
-        let name: Blocks.cellBuilder = { (tableView, indexPath) in
-            tableView.register(CellField.self)
-            
-            let cell: CellField = tableView.deque(indexPath)
+        let name = CellBuilder { (tableView, indexPath) in
+            let cell: CellField = tableView.prepare(indexPath)
             cell.build(placeholder: "Name", text: self.user.name, keyboardType: .default, isSecureTextEntry: false, block: {
                 self.user.name = $0
             })
             return cell
         }
         
-        let email: Blocks.cellBuilder = { (tableView, indexPath) in
-            tableView.register(CellField.self)
-            
-            let cell: CellField = tableView.deque(indexPath)
+        let email = CellBuilder { (tableView, indexPath) in
+            let cell: CellField = tableView.prepare(indexPath)
             cell.build(placeholder: "Email", text: self.user.email, keyboardType: .emailAddress, isSecureTextEntry: false, block: {
                 self.user.email = $0
             })
             return cell
         }
         
-        let password: Blocks.cellBuilder = { (tableView, indexPath) in
-            tableView.register(CellField.self)
-            
-            let cell: CellField = tableView.deque(indexPath)
+        let password = CellBuilder { (tableView, indexPath) in
+            let cell: CellField = tableView.prepare(indexPath)
             cell.build(placeholder: "Password", text: self.user.password, keyboardType: .default, isSecureTextEntry: true, block: {
                 self.user.password = $0
             })
             return cell
         }
         
-        let label: Blocks.cellBuilder = { (tableView, indexPath) in
-            tableView.register(CellLabel.self)
-            
-            let cell: CellLabel = tableView.deque(indexPath)
+        let label = CellBuilder(identifier: "label") { (tableView, indexPath) in
+            let cell: CellLabel = tableView.prepare(indexPath)
             cell.build(text: self.user.description)
             return cell
         }
         
-        let update: Blocks.cellBuilder = { (tableView, indexPath) in
-            tableView.register(CellButton.self)
-            
-            let cell: CellButton = tableView.deque(indexPath)
+        let update = CellBuilder { (tableView, indexPath) in
+            let cell: CellButton = tableView.prepare(indexPath)
             cell.build(text: "Reset values", block: {
                 self.user = User()
                 self.tableView.reloadData()
@@ -82,7 +79,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             return cell
         }
         
-        self.dataSource = [[(nil, name), (nil, email), (nil, password)], [("label", label)], [(nil, update)]]
+        self.dataSource = [[name, email, password], [label], [update]]
     }
     
     
@@ -101,6 +98,3 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
 }
-
-
-
