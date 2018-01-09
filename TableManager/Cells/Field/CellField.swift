@@ -20,7 +20,7 @@ class CellField: UITableViewCell, UITextFieldDelegate {
     
     var blockText: Blocks.string?
     
-    func build(placeholder: String?, text: String?, keyboardType: UIKeyboardType, isSecureTextEntry: Bool, block: Blocks.string?) {
+    func build(placeholder: String?, text: String?, keyboardType: UIKeyboardType = .default, isSecureTextEntry: Bool = false, block: Blocks.string?) {
         self.label.text = placeholder
         self.textField.placeholder = placeholder
         self.textField.text = text

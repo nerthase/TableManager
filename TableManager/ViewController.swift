@@ -42,7 +42,7 @@ extension ViewController {
     func populateTable() {
         let name = CellBuilder { (tableView, indexPath) in
             let cell: CellField = tableView.prepare(indexPath)
-            cell.build(placeholder: "Name", text: self.user.name, keyboardType: .default, isSecureTextEntry: false, block: {
+            cell.build(placeholder: "Name", text: self.user.name, block: {
                 self.user.name = $0
             })
             return cell
@@ -50,7 +50,7 @@ extension ViewController {
         
         let email = CellBuilder { (tableView, indexPath) in
             let cell: CellField = tableView.prepare(indexPath)
-            cell.build(placeholder: "Email", text: self.user.email, keyboardType: .emailAddress, isSecureTextEntry: false, block: {
+            cell.build(placeholder: "Email", text: self.user.email, keyboardType: .emailAddress, block: {
                 self.user.email = $0
             })
             return cell
@@ -58,7 +58,7 @@ extension ViewController {
         
         let password = CellBuilder { (tableView, indexPath) in
             let cell: CellField = tableView.prepare(indexPath)
-            cell.build(placeholder: "Password", text: self.user.password, keyboardType: .default, isSecureTextEntry: true, block: {
+            cell.build(placeholder: "Password", text: self.user.password, isSecureTextEntry: true, block: {
                 self.user.password = $0
             })
             return cell
